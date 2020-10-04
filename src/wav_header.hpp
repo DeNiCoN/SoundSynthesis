@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace SSyntesis
+namespace SSynthesis
 {
 
     struct WAVHeader
@@ -47,6 +47,8 @@ namespace SSyntesis
                     .subchunk2Size = numSamples * numChannels * bitsPerSample / 8
                 })
         {}
+
+        const WAVHeader& data() { return m_header; }
     private:
         WAVHeader m_header;
     };
