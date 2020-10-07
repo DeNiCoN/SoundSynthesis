@@ -12,7 +12,11 @@ namespace SSynthesis
         { a(t) } -> std::convertible_to<double>;
     };
 
-    using SampleType = int8_t;
+    //if it is 8 bits, then it should be unsigned in wav format, if more then
+    //should be signed.
+    //Float requires different wav header, so i just stick with integers
+    using SampleType = int16_t;
+
     template <AnalogFunction Func>
     class LinearPCM
     {
@@ -24,8 +28,7 @@ namespace SSynthesis
         }
 
         SampleType at(double t) const
-        { return SampleType(func(t) * std::numeric_limits<SampleType>::max())
-                ^ std::numeric_limits<SampleType>::min(); }
+        { return SampleType(func(t) * std::numeric_limits<SampleType>::max()); }
 
         SampleType operator()(double t) const { return at(t); }
         static unsigned calculateNumSamples(double duration, unsigned sampleRate)
@@ -45,7 +48,8 @@ namespace SSynthesis
         double step = 1.0 / pcm.sampleRate;
         for (unsigned i = 0; i < pcm.numSamples(); i++)
         {
-            out << pcm.at(pcm.from + i / static_cast<double>(pcm.sampleRate));
+            SampleType num = pcm.at(pcm.from + i / static_cast<double>(pcm.sampleRate));
+            out.write(reinterpret_cast<const char*>(&num), sizeof(SampleType));
         }
         return out;
     }
