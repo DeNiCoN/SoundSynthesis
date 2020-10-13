@@ -1,12 +1,34 @@
 #pragma once
 #include <cstdint>
+#include <iostream>
+#include <cassert>
 
 namespace SSynthesis
 {
     namespace MIDI
     {
-        struct MIDIHeader
+
+        template <typename Integer>
+        Integer readBigEndian(std::istream& in, size_t bytes = sizeof(Integer))
         {
+            assert(bytes > 0 && bytes <= sizeof(Integer));
+            uint8_t raw[bytes];
+            in.read(reinterpret_cast<char*>(raw), bytes);
+            Integer result = raw[0];
+            for (size_t i = 1; i < bytes; i++)
+            {
+                result = (result << 8) | raw[0];
+            }
+            return result;
+        }
+
+        class Header
+        {
+        public:
+            uint16_t ticksPerByte() const { return _raw; }
+            uint16_t frames() const { return _raw & 0x7F00; }
+            uint16_t ticks() const { return _raw & 0x00FF; }
+        private:
             int8_t chunkID[4]; // "MThd" by default
             uint32_t chunkSize; // should be 6
             uint16_t formatType; // 0-2
@@ -14,13 +36,11 @@ namespace SSynthesis
 
             uint16_t isFramesPerSecond : 1;
             uint16_t _raw : 15;
-            uint16_t ticksPerByte() const { return _raw; }
-            uint16_t frames() const { return _raw & 0x7F00; }
-            uint16_t ticks() const { return _raw & 0x00FF; }
             //From there tracks go
+
         };
 
-        struct MIDITrackChunk
+        struct TrackChunk
         {
             int8_t chunkID[4]; //Should be "MTrk"
             uint32_t chunkSize; // number of bytes used for all of the events
@@ -39,7 +59,7 @@ namespace SSynthesis
             PITCH_BEND = 0xE,
         };
 
-        struct MIDIChannelEvent
+        struct ChannelEvent
         {
             //Starts vith variable-length delta time
             uint8_t eventType : 4;
