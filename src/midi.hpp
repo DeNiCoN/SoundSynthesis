@@ -12,12 +12,12 @@ namespace SSynthesis
         Integer readBigEndian(std::istream& in, size_t bytes = sizeof(Integer))
         {
             assert(bytes > 0 && bytes <= sizeof(Integer));
-            uint8_t raw[bytes];
+            uint8_t raw[sizeof(Integer)];
             in.read(reinterpret_cast<char*>(raw), bytes);
             Integer result = raw[0];
             for (size_t i = 1; i < bytes; i++)
             {
-                result = (result << 8) | raw[0];
+                result = (result << 8) | raw[i];
             }
             return result;
         }
