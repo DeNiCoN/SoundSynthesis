@@ -15,13 +15,13 @@ if(NOT googletest_POPULATED)
 endif()
 
 
-file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.h *.cpp)
+file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.hpp *.cpp)
 
 include(GoogleTest)
 
 add_executable(tests ${TEST_SOURCES})
 
-target_link_libraries(tests gtest_main)
+target_link_libraries(tests ssynthesis-base gtest_main)
 target_include_directories(tests PUBLIC "../src")
 
 gtest_discover_tests(tests)

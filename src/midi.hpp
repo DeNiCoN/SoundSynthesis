@@ -22,30 +22,56 @@ namespace SSynthesis
             return result;
         }
 
-        class Header
+        class ChunkHeader
         {
         public:
-            uint16_t ticksPerByte() const { return _raw; }
-            uint16_t frames() const { return _raw & 0x7F00; }
-            uint16_t ticks() const { return _raw & 0x00FF; }
+            static ChunkHeader readFromStream(std::istream& in);
+
+            std::string getChunkID() const
+            { return std::string(m_chunkID, sizeof(m_chunkID)); };
+
+            uint32_t getChunkSize() const { return m_chunkSize; }
+
+            static constexpr const char* headerID = "MThd";
+            static constexpr const char* trackID = "MTrk";
+
+
         private:
-            int8_t chunkID[4]; // "MThd" by default
-            uint32_t chunkSize; // should be 6
-            uint16_t formatType; // 0-2
-            uint16_t numberOfTracks; // 1-65,535
+            char m_chunkID[4];
+            uint32_t m_chunkSize;
 
-            uint16_t isFramesPerSecond : 1;
-            uint16_t _raw : 15;
-            //From there tracks go
-
+            //Only reading is implemented
+            ChunkHeader() = default;
         };
 
-        struct TrackChunk
+        enum class FormatType : uint16_t
         {
-            int8_t chunkID[4]; //Should be "MTrk"
-            uint32_t chunkSize; // number of bytes used for all of the events
-                                // contained in the track.
-            //From there goes event data
+            ONE_TRACK = 0,
+            PARALLEL_TRACKS = 1,
+            SEQUENTIAL_TRAKS = 2
+        };
+
+        class HeaderData
+        {
+        public:
+            static HeaderData readFromStream(std::istream& in);
+            bool isFramesPerSecond() const { return m_isFramesPerSecond; }
+            uint16_t getTicksPerByte() const { return m_rawTimeInfo; }
+            uint16_t getFrames() const { return m_rawTimeInfo & 0x7F00; }
+            uint16_t getTicks() const { return m_rawTimeInfo & 0x00FF; }
+            FormatType getFormatType() const { return m_formatType; }
+            uint16_t getNumOfTracks() const { return m_numberOfTracks; }
+
+        private:
+            // "MThd" and 6
+            FormatType m_formatType; // 0-2
+            uint16_t m_numberOfTracks; // 1-65,535
+
+            bool m_isFramesPerSecond;
+            uint16_t m_rawTimeInfo;
+          
+            //Only reading is implemented
+            HeaderData() = default;
         };
 
         enum class EventType

@@ -6,8 +6,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(SoundSynthesis)
 
 set(CONFIGURE_DEPENDS ON)
-file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false src/*.h src/*.cpp)
-list(REMOVE_ITEM ${SOURCES} "src/main.cpp")
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false src/*.hpp src/*.cpp)
+get_filename_component(full_path_main_cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp ABSOLUTE)
+list(REMOVE_ITEM SOURCES ${full_path_main_cpp})
 set(SOURCES ${SOURCES})
 
 add_library(ssynthesis-base STATIC ${SOURCES})
