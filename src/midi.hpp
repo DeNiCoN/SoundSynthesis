@@ -7,21 +7,6 @@ namespace SSynthesis
 {
     namespace MIDI
     {
-
-        template <typename Integer>
-        Integer readBigEndian(std::istream& in, size_t bytes = sizeof(Integer))
-        {
-            assert(bytes > 0 && bytes <= sizeof(Integer));
-            uint8_t raw[sizeof(Integer)];
-            in.read(reinterpret_cast<char*>(raw), bytes);
-            Integer result = raw[0];
-            for (size_t i = 1; i < bytes; i++)
-            {
-                result = (result << 8) | raw[i];
-            }
-            return result;
-        }
-
         class ChunkHeader
         {
         public:
@@ -69,9 +54,6 @@ namespace SSynthesis
 
             bool m_isFramesPerSecond;
             uint16_t m_rawTimeInfo;
-          
-            //Only reading is implemented
-            HeaderData() = default;
         };
 
         enum class EventType
@@ -93,5 +75,20 @@ namespace SSynthesis
             uint8_t firstPar;
             uint8_t secondPar;
         };
+
+        template <typename Integer>
+        Integer readBigEndian(std::istream& in, size_t bytes = sizeof(Integer))
+        {
+            assert(bytes > 0 && bytes <= sizeof(Integer));
+            uint8_t raw[sizeof(Integer)];
+            in.read(reinterpret_cast<char*>(raw), bytes);
+            Integer result = raw[0];
+            for (size_t i = 1; i < bytes; i++)
+            {
+                result = (result << 8) | raw[i];
+            }
+            return result;
+        }
+
     }
 }

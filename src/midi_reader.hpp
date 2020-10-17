@@ -11,9 +11,9 @@ namespace SSynthesis
         public:
             //Reads header from input
             Reader(std::istream& input);
-
+           
         private:
-            Header header;
+            HeaderData m_header;
         };
        
     }
