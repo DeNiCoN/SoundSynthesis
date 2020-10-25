@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <cassert>
+#include <concepts>
 
 namespace SSynthesis
 {
@@ -81,7 +82,7 @@ namespace SSynthesis
             unsigned int secondPar;
         };
 
-        template <typename Integer>
+        template <std::integral Integer>
         Integer readBigEndian(std::istream& in, size_t bytes = sizeof(Integer))
         {
             assert(bytes > 0 && bytes <= sizeof(Integer));

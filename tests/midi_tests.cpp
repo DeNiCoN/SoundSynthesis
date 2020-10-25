@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
-#include "midi.hpp"
+#include "midi_reader.hpp"
+#include "midi_track.hpp"
 #include <sstream>
 
 using namespace std;
