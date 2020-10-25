@@ -67,13 +67,19 @@ namespace SSynthesis
             PITCH_BEND = 0xE,
         };
 
-        struct ChannelEvent
+        struct EventHead
         {
-            //Starts vith variable-length delta time
             uint8_t eventType : 4;
             uint8_t MIDIChannel : 4;
-            uint8_t firstPar;
-            uint8_t secondPar;
+        };
+       
+        struct ChannelEvent
+        {
+            EventType eventType;
+            uint8_t MIDIChannel;
+            //Starts vith variable-length delta time
+            unsigned int firstPar;
+            unsigned int secondPar;
         };
 
         template <typename Integer>
@@ -89,6 +95,8 @@ namespace SSynthesis
             }
             return result;
         }
+
+        uint32_t readVariableLength(std::istream& in);
 
     }
 }

@@ -63,3 +63,37 @@ TEST(MIDI, ReadHeaderData)
     ASSERT_FALSE(midiHeader.isFramesPerSecond());
     ASSERT_EQ(midiHeader.getTicks(), 96);
 }
+
+TEST(MIDI, ReadVariableLength)
+{
+    using namespace SSynthesis::MIDI;
+    const unsigned char data[]
+    {
+        0x00,                   // 00000000
+        0x40,                   // 00000040
+        0x7F,                   // 0000007F
+        0x81, 0x00,             // 00000080
+        0xC0, 0x00,             // 00002000
+        0xFF, 0x7F,             // 00003FFF
+        0x81, 0x80, 0x00,       // 00004000
+        0xC0, 0x80, 0x00,       // 00100000
+        0xFF, 0xFF, 0x7F,       // 001FFFFF
+        0x81, 0x80, 0x80, 0x00, // 00200000
+        0xC0, 0x80, 0x80, 0x00, // 08000000
+        0xFF, 0xFF, 0xFF, 0x7F  // 0FFFFFFF
+    };
+  
+    istringstream ss(string(reinterpret_cast<const char*>(data), sizeof(data)));
+    ASSERT_EQ(readVariableLength(ss), 0x00000000);
+    ASSERT_EQ(readVariableLength(ss), 0x00000040);
+    ASSERT_EQ(readVariableLength(ss), 0x0000007F);
+    ASSERT_EQ(readVariableLength(ss), 0x00000080);
+    ASSERT_EQ(readVariableLength(ss), 0x00002000);
+    ASSERT_EQ(readVariableLength(ss), 0x00003FFF);
+    ASSERT_EQ(readVariableLength(ss), 0x00004000);
+    ASSERT_EQ(readVariableLength(ss), 0x00100000);
+    ASSERT_EQ(readVariableLength(ss), 0x001FFFFF);
+    ASSERT_EQ(readVariableLength(ss), 0x00200000);
+    ASSERT_EQ(readVariableLength(ss), 0x08000000);
+    ASSERT_EQ(readVariableLength(ss), 0x0FFFFFFF);
+}

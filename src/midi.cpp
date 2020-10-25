@@ -27,5 +27,20 @@ namespace SSynthesis
             result.m_rawTimeInfo = time & 0x7FFF;
             return result;
         }
+
+        uint32_t readVariableLength(std::istream& in)
+        {
+            uint32_t result = 0;
+            char next;
+            in.read(&next, 1);
+            result |= next & 0x7F;
+            while (next & 0x80)
+            {
+                result = result << 7;
+                in.read(&next, 1);
+                result |= next & 0x7F;
+            }
+            return result;
+        };
     }
 }
